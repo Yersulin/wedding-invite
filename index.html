@@ -264,7 +264,7 @@
     // ===== Музыка =====
     const audio = document.getElementById('bgm');
     const soundBtn = document.getElementById('soundBtn');
-    let playing = false;
+    let playing = true;
     function updateSoundBtn(){ soundBtn.textContent = playing ? 'Звук: вкл' : 'Звук: выкл'; soundBtn.setAttribute('aria-pressed', String(playing)); }
     async function tryAutoplay(){
       try{ await audio.play(); playing = true; soundBtn.classList.remove('pulse'); }
