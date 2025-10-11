@@ -65,12 +65,12 @@
 
     /* ——— ПАРАЛЛАКС по ВСЕЙ странице: фиксированный слой без пустот ——— */
     .upground{
-      position: fixed; inset: 0; z-index: 999; pointer-events: none;   /* поверх всего, но некликабельно */
+      position: fixed; inset: 0; z-index: 999; pointer-events: none;
       overflow: hidden;
     }
     .up{
       position:absolute; will-change: transform, opacity;
-      opacity:0; transform: translate3d(0, 20vh, 0) scale(0.98);
+      opacity:0; transform: translate3d(0, 100vh, 0) scale(0.98); /* СТАРТ НИЖЕ ЭКРАНА */
       filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
       transition: opacity .5s ease-out;
       image-rendering: -webkit-optimize-contrast;
@@ -122,10 +122,8 @@
   </style>
 </head>
 <body>
-  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ (без пустот) -->
+  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ -->
   <div class="upground" aria-hidden="true">
-    <!-- data-start / data-end — прогресс по документу (0..1), когда объект виден -->
-    <!-- data-speed — «медленнее контента» (0.25..0.6) -->
     <img src="up1.png" alt="" class="up up--1"
          data-start="0.00" data-end="0.80" data-speed="0.20">
     <img src="up2.png" alt="" class="up up--2"
@@ -305,16 +303,11 @@
     audio.addEventListener('pause', ()=>{ if (!document.hidden) ensurePlay(); });
     enableBtn.addEventListener('click', async ()=>{ try { await audio.play(); } finally { gate.style.display = 'none'; } }, { once:true });
 
-    /* ===== ПАРАЛЛАКС ПО ВСЕЙ СТРАНИЦЕ =====
-       Управляем тремя PNG на фиксированном верхнем слое.
-       Каждый имеет окна видимости data-start..data-end (0..1 от общей прокрутки),
-       перемещается медленнее скролла (data-speed), появляется снизу и исчезает сверху.
-    */
+    /* ===== ПАРАЛЛАКС ПО ВСЕЙ СТРАНИЦЕ (снизу вверх) ===== */
     const upLayer = document.querySelector('.upground');
     const ups = Array.from(upLayer.querySelectorAll('.up'));
 
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-
     function getScrollProgress(){
       const doc = document.documentElement;
       const scrollTop = window.pageYOffset || doc.scrollTop || 0;
@@ -324,32 +317,32 @@
 
     function renderUp(){
       const vh = window.innerHeight || 800;
-      const t = getScrollProgress(); // общий прогресс страницы
+      const t = getScrollProgress(); // общий прогресс страницы (0..1)
 
       ups.forEach(el=>{
         const start = parseFloat(el.dataset.start || '0.1');
         const end   = parseFloat(el.dataset.end   || '0.7');
-        const speed = parseFloat(el.dataset.speed || '0.4'); // чем больше — тем заметнее отставание
+        const speed = parseFloat(el.dataset.speed || '0.4');
 
-        // локальный прогресс появления конкретного объекта
+        // локальный прогресс видимости
         const local = clamp01((t - start) / Math.max(1e-6, (end - start)));
 
+        // Плавное появление/исчезновение
         if (t < start || t > end){
-          // вне окна видимости — плавное исчезновение
           el.style.opacity = 0;
-          // За пределами тоже продолжаем уводить, чтобы не «застревал»
         } else {
-          // кривая прозрачности: мягкий вход/выход
           let alpha = 0;
-          if(local <= 0.10)       alpha = local / 0.10;               // 0→1
-          else if(local <= 0.85)  alpha = 1;                           // держим
-          else                    alpha = clamp01(1 - (local-0.85)/0.15); // 1→0
+          if(local <= 0.15)       alpha = local / 0.15;                 // 0→1
+          else if(local <= 0.85)  alpha = 1;                             // держим
+          else                    alpha = clamp01(1 - (local-0.85)/0.15);// 1→0
           el.style.opacity = alpha.toFixed(3);
         }
 
-        // путь: от +0.6vh до -1.0vh (в относительных к окну величинах), умножаем на speed
-        const path = (0.6*vh) + (-1.0*vh - 0.6*vh) * local; // ~+60vh → -100vh
-        const y = path * speed;
+        // ТРАЕКТОРИЯ: старт ДАЛЕКО СНИЗУ → уходит ВВЕРХ
+        const startY = 1.20 * vh;   // +120vh (ниже низа экрана)
+        const endY   = -1.20 * vh;  // -120vh (выше верха экрана)
+        const y = (startY + (endY - startY) * local) * speed;
+
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
       });
     }
@@ -358,16 +351,12 @@
     function onScroll(){
       if(!ticking){
         ticking = true;
-        requestAnimationFrame(()=>{
-          renderUp();
-          ticking = false;
-        });
+        requestAnimationFrame(()=>{ renderUp(); ticking = false; });
       }
     }
     window.addEventListener('scroll', onScroll, {passive:true});
     window.addEventListener('resize', renderUp, {passive:true});
 
-    // Первичный рендер (после загрузки изображений лучше)
     Promise.all(ups.map(img => img.complete ? Promise.resolve() : new Promise(r=>img.addEventListener('load', r, {once:true}))))
       .then(renderUp);
   </script>
