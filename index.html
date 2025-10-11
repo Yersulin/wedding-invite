@@ -43,7 +43,7 @@
     }
     .chip.active{border-color:var(--ink); background:var(--ink); color:#fff}
 
-    /* Шапка (hero) */
+    /* Шапка (секция) */
     .hero{padding:56px 0 18px}
     .names{
       font-family:"Playfair Display", serif; font-weight:600; line-height:1.06;
@@ -53,27 +53,25 @@
     .subtitle{margin-top:14px; text-align:center; color:var(--sub); font-size:16px; letter-spacing:.08em; text-transform:uppercase;}
     .rule{height:1px; background:var(--rule); margin:28px 0}
 
-    /* --- Фон из изображения в шапке --- */
-    .hero-bg{
+    /* --- Баннер с фото-фоном: ТОЛЬКО за именами/подзаголовком --- */
+    .hero-banner{
       position: relative;
-      padding: 110px 0 72px;              /* воздух сверху/снизу */
-      color: #fff;                         /* белый текст на фото */
+      padding: 110px 0 72px;
+      color: #fff;
       text-shadow: 0 1px 14px rgba(0,0,0,.35);
       border-radius: 22px;
       overflow: hidden;
-      /* фон: ваше изображение рядом с index.html; если в папке, укажите путь, напр. 'img/back.jpeg' */
-      background: url('back.jpeg') center/cover no-repeat, #bfae97; /* fallback цвет */
+      background: url('back.jpeg') center/cover no-repeat, #bfae97; /* поменяйте путь при необходимости */
     }
-    .hero-bg::after{
+    .hero-banner::after{
       content:"";
       position:absolute; inset:0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.40) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.28) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,.40) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.28) 100%);
       pointer-events:none;
     }
-    .hero-bg > *{ position: relative; z-index: 1; }
-    .hero-bg .names{ color:#fff; }
-    .hero-bg .subtitle{ color:#fff; }
+    .hero-banner > *{ position: relative; z-index: 1; }
+    .hero-banner .names{ color:#fff; }
+    .hero-banner .subtitle{ color:#fff; }
 
     .timer{display:grid; grid-template-columns:repeat(4, minmax(120px,1fr)); gap:14px; margin:26px 0 10px;}
     .card{
@@ -83,7 +81,7 @@
     .card .num{font-family:"Playfair Display", serif; font-size:42px; line-height:1;}
     .card .label{margin-top:8px; font-size:13px; color:var(--sub); letter-spacing:.08em; text-transform:uppercase}
 
-    /* Эстетичная рамка приглашения */
+    /* Рамка приглашения */
     .invite-card{
       margin:16px auto 0; max-width:820px; position:relative;
       background:linear-gradient(180deg, #fff 0%, #fffaf2 100%);
@@ -136,7 +134,7 @@
     @media (max-width: 560px){
       header{flex-direction:column; align-items:flex-start}
       .timer{grid-template-columns:repeat(2, 1fr)}
-      .hero-bg{ padding: 120px 0 80px; }
+      .hero-banner{ padding: 120px 0 80px; }
     }
 
     /* Фото секция */
@@ -182,17 +180,21 @@
       <div style="display:flex; align-items:center; gap:12px">
         <div class="lang-switch" role="tablist" aria-label="Язык">
           <button class="chip active" data-lang="ru" id="langRU" role="tab" aria-selected="true">RU</button>
-        <button class="chip" data-lang="kz" id="langKZ" role="tab" aria-selected="false">KZ</button>
+          <button class="chip" data-lang="kz" id="langKZ" role="tab" aria-selected="false">KZ</button>
         </div>
         <div class="date-chip" id="headerDate">1 ноября 2025</div>
       </div>
     </header>
 
-    <!-- ШАПКА С ФОНОМ ИЗ back.jpeg -->
-    <section class="hero hero-bg">
-      <h1 class="names">Андрей <span class="amp">&</span> Анна</h1>
-      <div class="subtitle" id="subtitleLine">Свадьба • Суббота • 18:00</div>
-      <div class="rule" style="background:rgba(255,255,255,.45)"></div>
+    <!-- ШАПКА: баннер с фоном из back.jpeg (ТОЛЬКО за заголовком/подзаголовком) -->
+    <section class="hero">
+      <div class="hero-banner">
+        <h1 class="names">Андрей <span class="amp">&</span> Анна</h1>
+        <div class="subtitle" id="subtitleLine">Свадьба • Суббота • 18:00</div>
+      </div>
+
+      <!-- дальше — обычный бежевый фон -->
+      <div class="rule"></div>
 
       <div class="timer">
         <div class="card"><div class="num" id="days">—</div><div class="label" id="labDays">Дней</div></div>
@@ -201,7 +203,6 @@
         <div class="card"><div class="num" id="secs">—</div><div class="label" id="labSecs">Секунд</div></div>
       </div>
 
-      <!-- Приглашение в рамке -->
       <div class="invite-card">
         <p class="invite-text" id="inviteText">
           Дорогие гости! С огромной радостью сообщаем Вам о том, что мы вступаем в брак и создаем нашу семью.
@@ -356,7 +357,7 @@
       renderHeaderDate(LANG);
       const subtitle = document.getElementById('subtitleLine');
       const dow = t.dow[targetDate.getDay()];
-      subtitle.textContent = `${t.subtitlePrefix} • ${dow} • 18:00`;
+      subtitle.textContent = `${t.subtitlePrefix} • ${dow} • 18:00`; // подпись в баннере
       document.getElementById('labDays').textContent  = t.timer.days;
       document.getElementById('labHours').textContent = t.timer.hours;
       document.getElementById('labMins').textContent  = t.timer.mins;
