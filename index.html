@@ -63,14 +63,15 @@
     .invite-card:before,.invite-card:after{content:""; position:absolute; inset:10px; border-radius:16px; border:1px dashed rgba(216,199,173,.7); pointer-events:none;}
     .invite-text{font-family:"Cormorant Garamond", serif; font-size:clamp(18px, 2.3vw, 21px); line-height:1.65; color:var(--ink); text-align:center; margin:0; letter-spacing:.01em;}
 
-    /* ——— ПАРАЛЛАКС по ВСЕЙ странице: фиксированный слой без пустот ——— */
+    /* ——— ПАРАЛЛАКС: фиксированный слой. ВХОД ТОЛЬКО СНИЗУ ——— */
     .upground{
       position: fixed; inset: 0; z-index: 999; pointer-events: none;
       overflow: hidden;
     }
     .up{
-      position:absolute; will-change: transform, opacity;
-      opacity:0; transform: translate3d(0, 100vh, 0) scale(0.98); /* СТАРТ НИЖЕ ЭКРАНА */
+      position:absolute; top: 100vh; /* базовая точка — прямо за нижним краем экрана */
+      will-change: transform, opacity;
+      opacity:0; transform: translate3d(0, 0, 0) scale(0.98);
       filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
       transition: opacity .5s ease-out;
       image-rendering: -webkit-optimize-contrast;
@@ -122,7 +123,7 @@
   </style>
 </head>
 <body>
-  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ -->
+  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ (вход снизу) -->
   <div class="upground" aria-hidden="true">
     <img src="up1.png" alt="" class="up up--1"
          data-start="0.00" data-end="0.80" data-speed="0.20">
@@ -240,7 +241,7 @@
           mapsBtn:'Открыть в Google Maps',footer:'С любовью • Андрей & Анна • 2025',
           invite:'Дорогие гости! С огромной радостью сообщаем Вам о том, что мы вступаем в брак и создаем нашу семью. Приглашаем вас разделить с нами этот особенный вечер. Ваше присутствие сделает наш день поистине незабываемым!'},
       kz:{subtitlePrefix:'Той',dow:['Жексенбі','Дүйсенбі','Сейсенбі','Сәрсенбі','Бейсенбі','Жұма','Сенбі'],
-          months:['қаңтар','ақпан','наурыз','сәуір','мамыр','маусым','шілде','тамыз','қыркүйек','қазан','қараша','желтоқсан'],
+          months:['қаңтар','ақпан','наурыз','сәуір','мамыр','маусым','шілде','тамыз','қазан','қараша','желтоқсан'],
           mapsBtn:'Google Maps-та ашу',footer:'Махаббатпен • Андрей & Анна • 2025',
           invite:'Құрметті қонақтар! Біз некеге тұрып, өз отбасымызды құратынымызды үлкен қуанышпен хабарлаймыз. Осы ерекше кешті бізбен бірге атап өтуге шақырамыз. Сіздердің қатысуларыңыз біздің күнімізді шын мәнінде ұмытылмас етеді!'}
     };
@@ -303,7 +304,7 @@
     audio.addEventListener('pause', ()=>{ if (!document.hidden) ensurePlay(); });
     enableBtn.addEventListener('click', async ()=>{ try { await audio.play(); } finally { gate.style.display = 'none'; } }, { once:true });
 
-    /* ===== ПАРАЛЛАКС ПО ВСЕЙ СТРАНИЦЕ (снизу вверх) ===== */
+    /* ===== ПАРАЛЛАКС: вход СНИЗУ, выход ВВЕРХ ===== */
     const upLayer = document.querySelector('.upground');
     const ups = Array.from(upLayer.querySelectorAll('.up'));
 
@@ -318,6 +319,7 @@
     function renderUp(){
       const vh = window.innerHeight || 800;
       const t = getScrollProgress(); // общий прогресс страницы (0..1)
+      const distance = 2.2 * vh;     // путь: от низа экрана до далеко за верх
 
       ups.forEach(el=>{
         const start = parseFloat(el.dataset.start || '0.1');
@@ -333,16 +335,13 @@
         } else {
           let alpha = 0;
           if(local <= 0.15)       alpha = local / 0.15;                 // 0→1
-          else if(local <= 0.85)  alpha = 1;                             // держим
+          else if(local <= 0.85)  alpha = 1;                             // удержание
           else                    alpha = clamp01(1 - (local-0.85)/0.15);// 1→0
           el.style.opacity = alpha.toFixed(3);
         }
 
-        // ТРАЕКТОРИЯ: старт ДАЛЕКО СНИЗУ → уходит ВВЕРХ
-        const startY = 1.20 * vh;   // +120vh (ниже низа экрана)
-        const endY   = -1.20 * vh;  // -120vh (выше верха экрана)
-        const y = (startY + (endY - startY) * local) * speed;
-
+        // ТРАЕКТОРИЯ: базовая точка top:100vh, уводим ВВЕРХ отрицательным translateY
+        const y = - local * distance * speed; // 0 → -distance*speed
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
       });
     }
