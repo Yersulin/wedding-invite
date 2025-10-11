@@ -18,7 +18,7 @@
 
     .container{max-width:1120px; margin:0 auto; padding:24px 20px;}
     header{border-bottom:1px solid var(--rule); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0 16px;}
-    .brand{font-family:"Playfair Display", serif; font-size:18px; letter-spacing:.08ем; text-transform:uppercase}
+    .brand{font-family:"Playfair Display", serif; font-size:18px; letter-spacing:.08em; text-transform:uppercase}
     .date-chip{font-size:14px; color:var(--sub); letter-spacing:.06em}
     .header-left{display:flex; align-items:center; gap:14px}
     .mono{width:40px; height:40px; border:1px solid var(--ink); border-radius:50%; display:grid; place-items:center;
@@ -71,12 +71,12 @@
     .up{
       position:absolute; top: 100vh; /* базовая точка — за нижним краем экрана */
       will-change: transform, opacity;
-      opacity:0; transform: translate3d(0, 0, 0) scale(0.98);
-      filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
+      opacity:0; transform: translate3d(0, 0, 0) scale(1.5); /* УВЕЛИЧЕНО x1.5 */
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.18));
       transition: opacity .5s ease-out;
       image-rendering: -webkit-optimize-contrast;
     }
-    /* расположение у краёв и размеры */
+    /* расположение у краёв и размеры (сохраняем, масштаб даёт ×1.5) */
     .up--1{ left: 1.5vw; width: clamp(140px, 34vw, 320px); }
     .up--2{ left: 8vw;   width: clamp(120px, 30vw, 280px); }
     .up--3{ right: 1.5vw; width: clamp(140px, 36vw, 340px); }
@@ -266,7 +266,7 @@
       document.getElementById('sectionPhotos').textContent = (LANG==='ru' ? 'Наши фото' : 'Біздің фотолар');
     }
     document.getElementById('langRU').addEventListener('click', ()=>{ LANG='ru'; localStorage.setItem('invite_lang', LANG); applyLang(); });
-    document.getElementById('langKZ').addEventListener('click', ()=>{ LANG='kz'; localStorage.setItem('invite_lang', LANG); applyLang(); });
+    document.getElementById('langKZ').addEventListener('click', ()=>{ LANG='кz'; localStorage.setItem('invite_lang', LANG); applyLang(); });
     applyLang();
 
     /* ===== Таймер ===== */
@@ -304,7 +304,7 @@
     audio.addEventListener('pause', ()=>{ if (!document.hidden) ensurePlay(); });
     enableBtn.addEventListener('click', async ()=>{ try { await audio.play(); } finally { gate.style.display = 'none'; } }, { once:true });
 
-    /* ===== ПАРАЛЛАКС: вход СНИЗУ, проходит ДО ВЕРХА ===== */
+    /* ===== ПАРАЛЛАКС: вход СНИЗУ, проходит ДО ВЕРХА (масштаб ×1.5) ===== */
     const upLayer = document.querySelector('.upground');
     const ups = Array.from(upLayer.querySelectorAll('.up'));
 
@@ -324,9 +324,6 @@
       ups.forEach(el=>{
         const start = parseFloat(el.dataset.start || '0.1');
         const end   = parseFloat(el.dataset.end   || '0.7');
-        // speed оставляем для «характера», но не влияем им на покрытие
-        // (иначе на низких значениях не дотянется до верха)
-        const _speed = parseFloat(el.dataset.speed || '0.4');
 
         // локальный прогресс видимости
         const local = clamp01((t - start) / Math.max(1e-6, (end - start)));
@@ -342,9 +339,9 @@
           el.style.opacity = alpha.toFixed(3);
         }
 
-        // ТРАЕКТОРИЯ: top:100vh; от 0 до -distance (гарантированно дойдёт до верха)
+        // ДВИЖЕНИЕ: от низа (0) до верха (-distance), масштаб остаётся x1.5
         const y = - local * distance;
-        el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+        el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(1.5)`;
       });
     }
 
