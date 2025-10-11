@@ -18,7 +18,7 @@
 
     .container{max-width:1120px; margin:0 auto; padding:24px 20px;}
     header{border-bottom:1px solid var(--rule); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0 16px;}
-    .brand{font-family:"Playfair Display", serif; font-size:18px; letter-spacing:.08em; text-transform:uppercase}
+    .brand{font-family:"Playfair Display", serif; font-size:18px; letter-spacing:.08ем; text-transform:uppercase}
     .date-chip{font-size:14px; color:var(--sub); letter-spacing:.06em}
     .header-left{display:flex; align-items:center; gap:14px}
     .mono{width:40px; height:40px; border:1px solid var(--ink); border-radius:50%; display:grid; place-items:center;
@@ -63,13 +63,13 @@
     .invite-card:before,.invite-card:after{content:""; position:absolute; inset:10px; border-radius:16px; border:1px dashed rgba(216,199,173,.7); pointer-events:none;}
     .invite-text{font-family:"Cormorant Garamond", serif; font-size:clamp(18px, 2.3vw, 21px); line-height:1.65; color:var(--ink); text-align:center; margin:0; letter-spacing:.01em;}
 
-    /* ——— ПАРАЛЛАКС: фиксированный слой. ВХОД ТОЛЬКО СНИЗУ ——— */
+    /* ——— ПАРАЛЛАКС: фиксированный слой. ВХОД СНИЗУ, ПРОХОД ДО ВВЕРХА ——— */
     .upground{
       position: fixed; inset: 0; z-index: 999; pointer-events: none;
       overflow: hidden;
     }
     .up{
-      position:absolute; top: 100vh; /* базовая точка — прямо за нижним краем экрана */
+      position:absolute; top: 100vh; /* базовая точка — за нижним краем экрана */
       will-change: transform, opacity;
       opacity:0; transform: translate3d(0, 0, 0) scale(0.98);
       filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
@@ -123,7 +123,7 @@
   </style>
 </head>
 <body>
-  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ (вход снизу) -->
+  <!-- ВЕРХНИЙ ПАРАЛЛАКС-СЛОЙ НА ВСЮ СТРАНИЦУ (вход снизу, проходит до верха) -->
   <div class="upground" aria-hidden="true">
     <img src="up1.png" alt="" class="up up--1"
          data-start="0.00" data-end="0.80" data-speed="0.20">
@@ -304,7 +304,7 @@
     audio.addEventListener('pause', ()=>{ if (!document.hidden) ensurePlay(); });
     enableBtn.addEventListener('click', async ()=>{ try { await audio.play(); } finally { gate.style.display = 'none'; } }, { once:true });
 
-    /* ===== ПАРАЛЛАКС: вход СНИЗУ, выход ВВЕРХ ===== */
+    /* ===== ПАРАЛЛАКС: вход СНИЗУ, проходит ДО ВЕРХА ===== */
     const upLayer = document.querySelector('.upground');
     const ups = Array.from(upLayer.querySelectorAll('.up'));
 
@@ -318,13 +318,15 @@
 
     function renderUp(){
       const vh = window.innerHeight || 800;
-      const t = getScrollProgress(); // общий прогресс страницы (0..1)
-      const distance = 2.2 * vh;     // путь: от низа экрана до далеко за верх
+      const t = getScrollProgress();        // общий прогресс страницы (0..1)
+      const distance = 2.4 * vh;            // хватит, чтобы пройти весь экран и уйти выше
 
       ups.forEach(el=>{
         const start = parseFloat(el.dataset.start || '0.1');
         const end   = parseFloat(el.dataset.end   || '0.7');
-        const speed = parseFloat(el.dataset.speed || '0.4');
+        // speed оставляем для «характера», но не влияем им на покрытие
+        // (иначе на низких значениях не дотянется до верха)
+        const _speed = parseFloat(el.dataset.speed || '0.4');
 
         // локальный прогресс видимости
         const local = clamp01((t - start) / Math.max(1e-6, (end - start)));
@@ -340,8 +342,8 @@
           el.style.opacity = alpha.toFixed(3);
         }
 
-        // ТРАЕКТОРИЯ: базовая точка top:100vh, уводим ВВЕРХ отрицательным translateY
-        const y = - local * distance * speed; // 0 → -distance*speed
+        // ТРАЕКТОРИЯ: top:100vh; от 0 до -distance (гарантированно дойдёт до верха)
+        const y = - local * distance;
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
       });
     }
