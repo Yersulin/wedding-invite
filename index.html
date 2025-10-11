@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Свадьба • Андрей & Анна</title>
-  <meta name="description" content="Сайт-пригласительный: таймер, фото пары, место проведения, карта (Google), RU/KZ, музыка, параллакс-объекты." />
+  <meta name="description" content="Сайт-пригласительный: таймер, фото пары, место проведения, карта (Google), RU/KZ, музыка, параллакс." />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -33,7 +33,7 @@
     .subtitle{margin-top:10px; text-align:center; color:var(--sub); font-size:16px; letter-spacing:.08em; text-transform:uppercase;}
     .rule{height:1px; background:var(--rule); margin:28px 0}
 
-    /* === ТОЧНЫЙ БЛОК hero-banner (как просил запомнить) === */
+    /* ——— ТВОЙ ТОЧНЫЙ БЛОК hero-banner ——— */
     .hero-banner{
       position: relative;
       padding: 110px 0 72px;
@@ -41,7 +41,7 @@
       background: url('back.png') center/cover no-repeat transparent;
       text-align:center;
     }
-    /* Плашка-облако под текстом для читаемости */
+    /* мягкая плашка под заголовком для читаемости */
     .hero-title{
       display:inline-block; padding:16px 22px; border-radius:16px;
       background: rgba(255,255,255,.35);
@@ -56,13 +56,56 @@
     .card .num{font-family:"Playfair Display", serif; font-size:42px; line-height:1;}
     .card .label{margin-top:8px; font-size:13px; color:var(--sub); letter-spacing:.08em; text-transform:uppercase}
 
+    /* Приглашение в рамке */
     .invite-card{margin:16px auto 0; max-width:820px; position:relative; background:linear-gradient(180deg,#fff 0%,#fffaf2 100%);
-      border:2px solid var(--gold); border-radius:22px; padding:22px 22px; box-shadow: inset 0 1px 0 rgba(255,255,255,.85), inset 0 -8px 20px rgba(216,199,173,.15), 0 10px 30px rgba(43,42,40,.07);
+      border:2px solid var(--gold); border-radius:22px; padding:22px 22px; box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.85), inset 0 -8px 20px rgba(216,199,173,.15), 0 10px 30px rgba(43,42,40,.07);
       outline:1px solid #f2eadf; outline-offset:-6px;}
     .invite-card:before,.invite-card:after{content:""; position:absolute; inset:10px; border-radius:16px; border:1px dashed rgba(216,199,173,.7); pointer-events:none;}
     .invite-text{font-family:"Cormorant Garamond", serif; font-size:clamp(18px, 2.3vw, 21px); line-height:1.65; color:var(--ink); text-align:center; margin:0; letter-spacing:.01em;}
 
+    /* ——— ПАРАЛЛАКС-СЕКЦИЯ ———
+       компактная высота, без пустот; плавное появление, движение и исчезновение */
+    .parallax-up{
+      position: relative;
+      min-height: 90vh;
+      overflow: hidden;
+      margin: 10px 0 0;
+      z-index: 1;
+    }
+    .parallax-img{
+      position:absolute;
+      will-change: transform, opacity;
+      opacity: 0;
+      transform: translate3d(0, 24vh, 0) scale(0.985);
+      transition: opacity .5s ease-out;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
+      pointer-events: none;
+    }
+    .parallax-img.visible{ opacity: 1; }
+
+    /* расположение: два слева, один справа, близко к краям */
+    .parallax-img.up1{ left: 2.5vw; bottom: -10vh; width: clamp(140px, 34vw, 320px); }
+    .parallax-img.up2{ left: 7vw;   bottom: 10vh;  width: clamp(120px, 30vw, 280px); }
+    .parallax-img.up3{ right: 2.5vw; bottom: -8vh; width: clamp(140px, 36vw, 340px); }
+
+    @media (max-width: 480px){
+      .parallax-img.up1{ left: 2vw;  width: clamp(140px, 48vw, 360px); }
+      .parallax-img.up2{ left: 6vw;  width: clamp(120px, 44vw, 320px); }
+      .parallax-img.up3{ right: 2vw; width: clamp(140px, 52vw, 380px); }
+    }
+
+    /* Фото секция */
     .section-title{margin:36px 0 8px; font-family:"Playfair Display", serif; font-size:28px; font-weight:600;}
+    .photos{margin-top:10px}
+    .photos-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width: 900px){ .photos-grid{ grid-template-columns:1fr; gap:20px; } .photo-card{ margin:0 auto; max-width:520px; } }
+    .photo-card{background:#fff; border:1px solid var(--rule); border-radius:26px; overflow:hidden}
+    .photo-wrap{aspect-ratio:3/4; width:100%; overflow:hidden; background:#eee; border-radius:26px; border:1px solid rgba(0,0,0,.04)}
+    .photo-wrap img{width:100%; height:100%; object-fit:cover; display:block; border-radius:26px}
+    .caption{padding:12px 14px; font-size:14px; color:var(--sub); text-align:center}
+
+    /* Место проведения */
     .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap:24px; align-items:start;}
     .location-box{background:#fff; border:1px solid var(--rule); border-radius:18px; padding:22px 22px 18px;}
     .location-row{display:grid; grid-template-columns:108px 1fr; gap:14px; padding:10px 0; border-bottom:1px solid var(--rule)}
@@ -76,56 +119,18 @@
     .btn.secondary{background:#fff; color:var(--ink); border-color:var(--rule)}
     footer{padding:40px 0 60px; text-align:center; color:var(--sub); font-size:13px}
 
-    .photos{margin-top:10px}
-    .photos-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-    @media (max-width: 900px){ .photos-grid{ grid-template-columns:1fr; gap:20px; } .photo-card{ margin:0 auto; max-width:520px; } }
-    .photo-card{background:#fff; border:1px solid var(--rule); border-radius:26px; overflow:hidden}
-    .photo-wrap{aspect-ratio:3/4; width:100%; overflow:hidden; background:#eee; border-radius:26px; border:1px solid rgba(0,0,0,.04)}
-    .photo-wrap img{width:100%; height:100%; object-fit:cover; display:block; border-radius:26px}
-    .caption{padding:12px 14px; font-size:14px; color:var(--sub); text-align:center}
-
-    /* ======= ПАРАЛЛАКС-СЕКЦИЯ (мобильная в приоритете) ======= */
-    .parallax-up{
-      position: relative;
-      height: 140vh;              /* запас высоты для «пути» объектов */
-      pointer-events: none;       /* не мешаем жестам */
-      margin: 10px 0 0;           /* после таймера и карточки-приглашения */
-      overflow: visible;          /* пусть выходят снизу/сверху */
-      z-index: 3;
-    }
-    .up{
-      position: absolute;
-      bottom: -30vh;              /* старт ниже нижнего края секции */
-      will-change: transform, opacity;
-      opacity: 0;
-      transform: translate3d(0, 30vh, 0) scale(0.98);
-      filter: drop-shadow(0 8px 18px rgba(0,0,0,.16));
-      transition: opacity .4s ease-out;
-    }
-    .up--1{ left: 2.5vw; width: clamp(140px, 34vw, 320px); }
-    .up--2{ left: 8vw;   width: clamp(120px, 30vw, 280px); }
-    .up--3{ right: 2.5vw; width: clamp(140px, 36vw, 340px); }
-
-    /* телефоны — немного крупнее и ближе к краям */
-    @media (max-width: 480px){
-      .up--1{ left: 2vw; width: clamp(140px, 48vw, 360px); }
-      .up--2{ left: 6vw; width: clamp(120px, 44vw, 320px); }
-      .up--3{ right: 2vw; width: clamp(140px, 52vw, 380px); }
-    }
-
+    @media (max-width: 1024px){ .grid{grid-template-columns:1fr} .map{height:360px} }
+    @media (max-width: 860px){ header{flex-direction:column; align-items:flex-start} .timer{grid-template-columns:repeat(2, 1fr)} }
     /* Оверлей для автоплея */
     .sound-overlay{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); backdrop-filter:blur(2px); z-index:9999;}
     .sound-overlay .panel{background:#fff; border:1px solid var(--rule); border-radius:16px; padding:16px 18px; text-align:center; max-width:360px}
     .sound-overlay .panel h3{margin:0 0 8px; font-family:"Playfair Display", serif}
     .sound-overlay .panel p{margin:0 0 12px; color:var(--sub)}
     .sound-overlay .panel button{border:1px solid var(--ink); background:var(--accent); color:#fff; border-radius:999px; padding:10px 14px; cursor:pointer}
-
-    @media (max-width: 1024px){ .grid{grid-template-columns:1fr} .map{height:360px} }
-    @media (max-width: 860px){ header{flex-direction:column; align-items:flex-start} .timer{grid-template-columns:repeat(2, 1fr)} }
   </style>
 </head>
 <body>
-  <!-- Аудио -->
+  <!-- Музыка (автовоспроизведение, если разрешено браузером) -->
   <audio id="bgm" src="music.mp3" preload="auto" loop playsinline></audio>
   <div class="sound-overlay" id="soundGate" aria-hidden="true">
     <div class="panel">
@@ -175,11 +180,11 @@
       </div>
     </section>
 
-    <!-- ПАРАЛЛАКС-СЛОЙ (идёт сразу после «героя» и приглашения) -->
+    <!-- ПАРАЛЛАКС-СЕКЦИЯ (после таймера/приглашения) -->
     <section class="parallax-up" id="parallaxUp">
-      <img src="up1.png" alt="" class="up up--1" data-speed="0.35" data-stagger="0.00">
-      <img src="up2.png" alt="" class="up up--2" data-speed="0.50" data-stagger="0.15">
-      <img src="up3.png" alt="" class="up up--3" data-speed="0.40" data-stagger="0.30">
+      <img src="up1.png" alt="" class="parallax-img up1" data-speed="0.35" data-stagger="0.00">
+      <img src="up2.png" alt="" class="parallax-img up2" data-speed="0.50" data-stagger="0.15">
+      <img src="up3.png" alt="" class="parallax-img up3" data-speed="0.40" data-stagger="0.30">
     </section>
 
     <!-- Фото пары -->
@@ -230,7 +235,7 @@
   </div>
 
   <script>
-    /* ====== Настройки события и локаль (кратко) ====== */
+    /* ===== Событие/дата и локаль ===== */
     const EVENT_ISO = "2025-11-01T18:00:00+05:00";
     const targetDate = new Date(EVENT_ISO);
     const headerDateEl = document.getElementById('headerDate');
@@ -268,7 +273,7 @@
     document.getElementById('langKZ').addEventListener('click', ()=>{ LANG='kz'; localStorage.setItem('invite_lang', LANG); applyLang(); });
     applyLang();
 
-    /* ====== Таймер ====== */
+    /* ===== Таймер ===== */
     const daysEl = document.getElementById('days');
     const hoursEl = document.getElementById('hours');
     const minsEl = document.getElementById('mins');
@@ -289,11 +294,11 @@
     }
     tick(); setInterval(tick, 1000);
 
-    /* ====== Google Maps кнопка ====== */
+    /* ===== Google Maps ===== */
     const GMAPS_URL = "https://www.google.com/maps/place/AI-SULTAN+HALL/@43.641568,73.7541741,17.04z/data=!4m6!3m5!1s0x389fe9004dbde3ad:0xd3b91d97d575564c!8m2!3d43.643165!4d73.752697!16s%2Fg%2F11mdqlgg__?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D";
     document.getElementById('mapsBtn').href = GMAPS_URL;
 
-    /* ====== Музыка автоплей ====== */
+    /* ===== Музыка автоплей ===== */
     const audio = document.getElementById('bgm');
     const gate = document.getElementById('soundGate');
     const enableBtn = document.getElementById('enableSound');
@@ -303,51 +308,47 @@
     audio.addEventListener('pause', ()=>{ if (!document.hidden) ensurePlay(); });
     enableBtn.addEventListener('click', async ()=>{ try { await audio.play(); } finally { gate.style.display = 'none'; } }, { once:true });
 
-    /* ====== ПАРАЛЛАКС ЛОГИКА ======
-       Цель: плавный мобильный параллакс без «прибитых» fixed-элементов.
-       Принцип: объекты абсолютные внутри .parallax-up; их Y-смещение и прозрачность зависят от прогресса прокрутки секции.
-       - t = 0 => секция только появилась снизу (объекты внизу, прозрачные)
-       - t ~ 0.2..0.7 => основное движение и видимость
-       - t -> 1 => секция уходит вверх, объекты уходят наверх и растворяются
-    */
+    /* ===== ПАРАЛЛАКС: плавное появление/движение/исчезновение ===== */
     const section = document.getElementById('parallaxUp');
-    const ups = Array.from(section.querySelectorAll('.up'));
-    let ticking = false;
+    const imgs = Array.from(section.querySelectorAll('.parallax-img'));
+    let ticking = false, lastY = 0;
+
+    // observer: показывает изображение при входе и скрывает при выходе
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); }
+        else{ e.target.classList.remove('visible'); }
+      });
+    }, {root: null, threshold: 0});
+    imgs.forEach(img => io.observe(img));
 
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
-    function computeProgress(){
+    // Основной отрисовщик: равномерное движение немного медленнее скролла
+    function renderParallax(){
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
-      // Прогресс появления секции в вьюпорте:
-      // 0 — секция полностью ниже (еще не видна), 1 — секция полностью выше (уехала).
+
+      // Прогресс положения секции в вьюпорте (0 — полностью снизу, 1 — полностью ушла вверх)
       const total = vh + rect.height;
-      const visible = clamp01(1 - (rect.top + rect.height) / total);
-      return visible;
-    }
+      const t = clamp01(1 - (rect.top + rect.height) / total);
 
-    function render(){
-      const t = computeProgress(); // 0..1
-      // Базовые параметры движения:
-      // distanceUp — сколько «пути» проходит объект по Y (высота секции), чем больше — тем выше уедет
-      const distanceUp = section.offsetHeight * 0.9;
+      imgs.forEach((el)=>{
+        const speed = parseFloat(el.dataset.speed || '0.4');     // 0.35..0.5 — медленнее контента
+        const stagger = parseFloat(el.dataset.stagger || '0');   // задержка появления
+        const local = clamp01((t - stagger) / (0.95 - stagger + 1e-6));
 
-      ups.forEach((el, idx)=>{
-        const speed = parseFloat(el.dataset.speed || '0.4');   // 0.35..0.5
-        const stagger = parseFloat(el.dataset.stagger || '0'); // задержка появления 0..0.3
-        // Локальный прогресс с учетом задержки, и немного «растягиваем» фазу входа/выхода
-        let local = clamp01((t - stagger) / (0.9 - stagger + 1e-6));
+        // диапазон пути: от небольшого выхода снизу до ухода выше верха
+        const distance = section.offsetHeight * 0.9;
+        const start =  0.30 * distance;   // снизу
+        const end   = -0.70 * distance;   // выше верха
+        const y = start + (end - start) * (local * speed);
 
-        // Смещение: начинаем снизу (плюс), двигаем вверх (минус)
-        const startOffset = 0.30 * distanceUp;   // стартовая позиция ниже низа секции
-        const endOffset   = -0.70 * distanceUp;  // конечная позиция выше верха секции
-        const y = startOffset + (endOffset - startOffset) * (local * speed);
-
-        // Прозрачность: плавно входим (0..0.25), держим (0.25..0.8), выходим (0.8..1)
+        // прозрачность: плавный вход/удержание/выход
         let alpha = 0;
-        if(local <= 0.10)       alpha = local / 0.10;           // 0 → 1
-        else if(local <= 0.75)  alpha = 1;                       // видимый участок
-        else                    alpha = clamp01(1 - (local - 0.75) / 0.25); // затухание
+        if(local <= 0.10)       alpha = local / 0.10;
+        else if(local <= 0.80)  alpha = 1;
+        else                    alpha = clamp01(1 - (local - 0.80) / 0.20);
 
         el.style.opacity = alpha.toFixed(3);
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
@@ -357,29 +358,25 @@
     }
 
     function onScroll(){
-      if (!ticking){
+      lastY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if(!ticking){
         ticking = true;
-        requestAnimationFrame(render);
+        requestAnimationFrame(renderParallax);
       }
     }
 
-    // Первичная отрисовка после загрузки изображений (важно для размеров)
-    const imgPromises = ups.map(img => img.complete ? Promise.resolve() :
-      new Promise(res => img.addEventListener('load', res, {once:true})));
-    Promise.all(imgPromises).then(()=>{ render(); });
+    // Первая отрисовка после загрузки изображений
+    Promise.all(imgs.map(i => i.complete ? Promise.resolve() : new Promise(res => i.addEventListener('load', res, {once:true}))))
+      .then(()=>renderParallax());
 
     window.addEventListener('scroll', onScroll, {passive:true});
-    window.addEventListener('resize', ()=>{ render(); }, {passive:true});
+    window.addEventListener('resize', renderParallax, {passive:true});
 
-    // Мягкий старт при входе секции в вьюпорт — для экономии на скрытой секции
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          render();
-        }
-      });
-    }, {root:null, threshold:[0, .1, .25, .5, .75, 1]});
-    io.observe(section);
+    // слегка подстраховаться при входе секции
+    const ioSection = new IntersectionObserver((ents)=>{
+      ents.forEach(e=>{ if(e.isIntersecting) renderParallax(); });
+    }, {threshold:[0,.1,.25,.5,.75,1]});
+    ioSection.observe(section);
   </script>
 </body>
 </html>
